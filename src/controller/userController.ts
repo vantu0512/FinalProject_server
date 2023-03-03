@@ -1,6 +1,8 @@
-import User from "../model/user.js";
+import User from "../model/user";
+import { Request, Response } from "express";
 
-const getAllUser = async (req, res) => {
+
+const getAllUser = async (req:Request, res:Response) => {
   try {
     const result = await User.find({});
     if (result) {

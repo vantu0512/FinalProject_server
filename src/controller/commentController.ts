@@ -1,16 +1,37 @@
-import Book from "../model/book.js";
-import Assessment from "../model/assessment.js"
-import User from "../model/user.js";
+import Book from "../model/book";
+import Comment from "../model/comment"
+import User from "../model/user";
+import { Request, Response } from "express";
 
-const getAllAssessmentByBookId = async(req, res)=>{
+
+// const getAllCartByUserName = async (req:Request, res:Response) => {
+//   try {
+//     const userName = req.query.userName;
+//     const result = await Cart.find(
+//       { userName: userName },
+//       { createdAt: 0, updatedAt: 0, userName: 0, _id: 0 }
+//     ).populate("bookId", { createdAt: 0, updatedAt: 0 });
+//     return res.status(200).json({
+//       errCode: 0,
+//       errMessage: "Get all cart success!",
+//       data: result,
+//     });
+//   } catch (e) {
+//     return res.status(500).json({
+//       errCode: 1,
+//       errMessage: e.message,
+//     });
+//   }
+// };
+const getAllCommentByBookId = async(req:Request, res:Response)=>{
     try {
         const data = req.query;
-        const result = await Assessment.find({
+        const result = await Comment.find({
             bookId: data.bookId,
           });
           return res.status(200).json({
             errCode: 0,
-            errMessage: "Get all assessment success!",
+            errMessage: "Get all comment success!",
             data: result,
           });
     } 
@@ -22,20 +43,20 @@ const getAllAssessmentByBookId = async(req, res)=>{
     }
 }
 
-const addAssessment = async (req, res)=>{
+const addComment = async (req:Request, res:Response)=>{
     try {
         const data = req.body;
         const user = await User.findOne({userName: data.userName});
         const book = await Book.findOne({bookId: data.bookId});
         if(user && book){
-          const result = await Assessment.create({
+          const result = await Comment.create({
             userName: data.userName,
             bookId: data.bookId,
-            star: data.star,
+            comment: data.comment,
           });
           return res.status(200).json({
             errCode: 0,
-            errMessage: "Add assessment success!",
+            errMessage: "Add comment success!",
             data: result,
           });
         }
@@ -54,20 +75,20 @@ const addAssessment = async (req, res)=>{
     }
 }
 
-const updateAssessment = async (req, res) => {
+const updateComment = async (req:Request, res:Response) => {
   try {
     const data = req.body;
-    const result = await Assessment.findOne({
+    const result = await Comment.findOne({
       userName: data.userName,
       bookId: data.bookId,
-      _id: data.assessmentId
+      _id: data.commentId
     });
     if (result) {
-      result.star = data.newStar
+      result.comment = data.newComment
       await result.save();
       return res.status(200).json({
         errCode: 0,
-        errMessage: "Update assessment success!",
+        errMessage: "Update comment success!",
         data: result,
       });
     } 
@@ -79,17 +100,17 @@ const updateAssessment = async (req, res) => {
     }
 };
 
-const deleteAssessment = async (req, res) => {
+const deleteComment = async (req:Request, res:Response) => {
   try {
     const data = req.body;
-    const result = await Assessment.findOneAndDelete({
+    const result = await Comment.findOneAndDelete({
       userName: data.userName,
       bookId: data.bookId,
-      _id: data.assessmentId
+      _id: data.commentId
     });
     return res.status(200).json({
       errCode: 0,
-      errMessage: "Delete assessment success!",
+      errMessage: "Delete comment success!",
       data: result,
     });
   } catch (e) {
@@ -100,10 +121,10 @@ const deleteAssessment = async (req, res) => {
   }
 };
 
-const assessmentController = {
-  getAllAssessmentByBookId,
-  addAssessment,
-  updateAssessment,
-  deleteAssessment,
+const commentController = {
+  getAllCommentByBookId,
+  addComment,
+  updateComment,
+  deleteComment,
 };
-export default assessmentController;
+export default commentController;

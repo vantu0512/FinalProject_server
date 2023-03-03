@@ -1,6 +1,8 @@
-import Book from "../model/book.js";
+import Book from "../model/book";
+import { Request, Response } from "express";
 
-const getAllBook = async (req, res) => {
+
+const getAllBook = async (req:Request, res:Response) => {
   try {
     const result = await Book.find({});
     if (result) {
@@ -20,7 +22,7 @@ const getAllBook = async (req, res) => {
   }
 };
 
-const getDetailBook = async (req, res) => {
+const getDetailBook = async (req:Request, res:Response) => {
   try {
     const id = req.query.id;
     const result = await Book.findById({ _id: id });
@@ -41,7 +43,7 @@ const getDetailBook = async (req, res) => {
   }
 };
 
-const deleteBook = async (req, res) => {
+const deleteBook = async (req:Request, res:Response) => {
   try {
     const id = req.query.id;
     const result = await Book.findOneAndDelete({
@@ -63,7 +65,7 @@ const deleteBook = async (req, res) => {
   }
 };
 
-const createBook = async (req, res) => {
+const createBook = async (req:Request, res:Response) => {
   try {
     const data = req.body;
     const result = await Book.create({
@@ -90,7 +92,7 @@ const createBook = async (req, res) => {
   }
 };
 
-const updateBook = async (req, res) => {
+const updateBook = async (req:Request, res:Response) => {
   try {
     const data = req.body;
     const result = await Book.findById({ _id: data.id });

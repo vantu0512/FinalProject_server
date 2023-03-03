@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import User from "../model/user.js";
+import User from "../model/user";
+import { Request, Response } from "express";
 
-const generateToken = (payload) => {
+const generateToken = (payload: any) => {
     const secretAccessToken = process.env.ACCESS_TOKEN_SECRET;
     const secretRefreshToken = process.env.REFRESH_TOKEN_SECRET;
     const accessToken = jwt.sign(payload, secretAccessToken, {
@@ -15,8 +16,8 @@ const generateToken = (payload) => {
   };
 
 const comparePassword = async (
-    clientPassword,
-    serverPassword
+    clientPassword: string,
+    serverPassword: string
   ) => {
     try {
       let validPassword = await bcrypt.compare(clientPassword, serverPassword);
@@ -26,7 +27,7 @@ const comparePassword = async (
     }
   };
 
-const signUp = async (req, res) => {
+const signUp = async (req:Request, res:Response) => {
   try {
     let userData = req.body;
     const checkExist = await User.findOne({ userName: userData.userName });
@@ -57,7 +58,7 @@ const signUp = async (req, res) => {
   }
 };
 
-const signIn = async (req, res) => {
+const signIn = async (req:Request, res:Response) => {
   try {
     const userData = req.body;
     const checkExist = await User.findOne({
@@ -95,7 +96,7 @@ const signIn = async (req, res) => {
   }
 };
 
-const logout = async (req, res) => {
+const logout = async (req:Request, res:Response) => {
   try {
     const userData = req.body;
     const checkExist = await User.findOne({

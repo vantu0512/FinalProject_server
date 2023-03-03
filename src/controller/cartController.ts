@@ -1,6 +1,8 @@
-import Cart from "../model/cart.js";
+import Cart from "../model/cart"
+import { Request, Response } from "express";
 
-const getAllCartByUserName = async (req, res) => {
+
+const getAllCartByUserName = async (req:Request, res:Response) => {
   try {
     const userName = req.query.userName;
     const result = await Cart.find(
@@ -20,7 +22,7 @@ const getAllCartByUserName = async (req, res) => {
   }
 };
 
-const AddOrUpdateCart = async (req, res) => {
+const AddOrUpdateCart = async (req:Request, res:Response) => {
   try {
     const cartData = req.body;
     const result = await Cart.findOne({
@@ -28,11 +30,12 @@ const AddOrUpdateCart = async (req, res) => {
       bookId: cartData.bookId,
     });
     if (result) {
-      result.quantity = Number(result.quantity) + Number(cartData.quantity);
+      result.quantity =
+        Number(result.quantity) + Number(cartData.quantity);
       await result.save();
       return res.status(200).json({
         errCode: 0,
-        errMessage: "Add to cart success!",
+        errMessage: "Update cart success!",
         data: result,
       });
     } else {
@@ -55,7 +58,7 @@ const AddOrUpdateCart = async (req, res) => {
   }
 };
 
-const removeFromCart = async (req, res) => {
+const removeFromCart = async (req:Request, res:Response) => {
   try {
     const cartData = req.body;
     const result = await Cart.findOneAndDelete({
