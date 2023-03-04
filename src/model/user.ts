@@ -5,10 +5,10 @@ const userSchema = new Schema(
   {
     userName: { type: String, required: true },
     password: { type: String, required: true },
-    certificatedId: { type: Number},
-    email: { type: String},
-    address: { type: String},
-    role: {type: String}
+    email: { type: String },
+    role: { type: String },
+    address: { type: String },
+    fullName: { type: String },
   },
   {
     timestamps: true,

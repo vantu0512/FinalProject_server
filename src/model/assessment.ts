@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 const assessmentSchema = new Schema(
   {
     userName: { type: String, required: true, ref: "users" },
-    bookId: { type: Schema.Types.ObjectId, required: true, ref: "books" },
+    productId: { type: Schema.Types.ObjectId, required: true, ref: "products" },
     star: { type: Number, required: true },
   },
   {

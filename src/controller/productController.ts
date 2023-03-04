@@ -1,18 +1,17 @@
-import Book from "../model/book";
+import Product from "../model/product";
 import { Request, Response } from "express";
 
-
-const getAllBook = async (req:Request, res:Response) => {
+const getAllProduct = async (req: Request, res: Response) => {
   try {
-    const result = await Book.find({});
+    const result = await Product.find({});
     if (result) {
       return res.status(200).json({
         errCode: 0,
-        errMessage: "Get all book success!",
-        listBook: result,
+        errMessage: "Get all product success!",
+        listProduct: result,
       });
     } else {
-      throw new Error("There are no book!");
+      throw new Error("There are no product!");
     }
   } catch (e) {
     return res.status(500).json({
@@ -22,18 +21,18 @@ const getAllBook = async (req:Request, res:Response) => {
   }
 };
 
-const getDetailBook = async (req:Request, res:Response) => {
+const getDetailProduct = async (req: Request, res: Response) => {
   try {
     const id = req.query.id;
-    const result = await Book.findById({ _id: id });
+    const result = await Product.findById({ _id: id });
     if (result) {
       return res.status(200).json({
         errCode: 0,
-        errMessage: "Get detail book success!",
-        book: result,
+        errMessage: "Get detail product success!",
+        product: result,
       });
     } else {
-      throw new Error("There are no book!");
+      throw new Error("There are no product!");
     }
   } catch (e) {
     return res.status(500).json({
@@ -43,19 +42,19 @@ const getDetailBook = async (req:Request, res:Response) => {
   }
 };
 
-const deleteBook = async (req:Request, res:Response) => {
+const deleteProduct = async (req: Request, res: Response) => {
   try {
     const id = req.query.id;
-    const result = await Book.findOneAndDelete({
+    const result = await Product.findOneAndDelete({
       _id: id,
     });
     if (result) {
       return res.status(200).json({
         errCode: 0,
-        errMessage: "Delete book success!",
+        errMessage: "Delete product success!",
       });
     } else {
-      throw new Error("This book is already deleted!");
+      throw new Error("This product is already deleted!");
     }
   } catch (e) {
     return res.status(500).json({
@@ -65,10 +64,10 @@ const deleteBook = async (req:Request, res:Response) => {
   }
 };
 
-const createBook = async (req:Request, res:Response) => {
+const createProduct = async (req: Request, res: Response) => {
   try {
     const data = req.body;
-    const result = await Book.create({
+    const result = await Product.create({
       title: data.title,
       author: data.author,
       description: data.description,
@@ -81,7 +80,7 @@ const createBook = async (req:Request, res:Response) => {
 
     return res.status(200).json({
       errCode: 0,
-      errMessage: "Create new book success!",
+      errMessage: "Create new product success!",
       data: result,
     });
   } catch (e) {
@@ -92,27 +91,24 @@ const createBook = async (req:Request, res:Response) => {
   }
 };
 
-const updateBook = async (req:Request, res:Response) => {
+const updateProduct = async (req: Request, res: Response) => {
   try {
     const data = req.body;
-    const result = await Book.findById({ _id: data.id });
+    const result = await Product.findById({ _id: data.id });
     if (result) {
-      result.title = data.title;
-      result.author = data.author;
       result.description = data.description;
       result.datePublish = data.datePublish;
-      result.pageNumber = data.pageNumber;
       result.price = data.price;
-      result.category = data.category;
+      result.categoryId = data.category;
       result.imgUrl = data.imgUrl;
       await result.save();
       return res.status(200).json({
         errCode: 0,
-        errMessage: "Update book success!",
+        errMessage: "Update product success!",
         data: result,
       });
     } else {
-      throw new Error("This book does't exist!");
+      throw new Error("This product does't exist!");
     }
   } catch (e) {
     return res.status(500).json({
@@ -122,12 +118,12 @@ const updateBook = async (req:Request, res:Response) => {
   }
 };
 
-const bookController = {
-  getAllBook,
-  getDetailBook,
-  createBook,
-  deleteBook,
-  updateBook,
+const productController = {
+  getAllProduct,
+  getDetailProduct,
+  createProduct,
+  deleteProduct,
+  updateProduct,
 };
 
-export default bookController;
+export default productController;
