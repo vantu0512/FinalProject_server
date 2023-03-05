@@ -4,42 +4,42 @@ import User from "../model/user";
 import { Request, Response } from "express";
 
 const generateToken = (payload: any) => {
-    const secretAccessToken = process.env.ACCESS_TOKEN_SECRET;
-    const secretRefreshToken = process.env.REFRESH_TOKEN_SECRET;
-    const accessToken = jwt.sign(payload, secretAccessToken, {
-      expiresIn: "30m",
-    });
-    const refreshToken = jwt.sign(payload, secretRefreshToken, {
-      expiresIn: "30m",
-    });
-    return { accessToken, refreshToken };
-  };
+  const secretAccessToken = process.env.ACCESS_TOKEN_SECRET;
+  const secretRefreshToken = process.env.REFRESH_TOKEN_SECRET;
+  const accessToken = jwt.sign(payload, secretAccessToken, {
+    expiresIn: "30m",
+  });
+  const refreshToken = jwt.sign(payload, secretRefreshToken, {
+    expiresIn: "30m",
+  });
+  return { accessToken, refreshToken };
+};
 
 const comparePassword = async (
-    clientPassword: string,
-    serverPassword: string
-  ) => {
-    try {
-      let validPassword = await bcrypt.compare(clientPassword, serverPassword);
-      return validPassword;
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  clientPassword: string,
+  serverPassword: string
+) => {
+  try {
+    let validPassword = await bcrypt.compare(clientPassword, serverPassword);
+    return validPassword;
+  } catch (e) {
+    console.log(e);
+  }
+};
 
-const signUp = async (req:Request, res:Response) => {
+const signUp = async (req: Request, res: Response) => {
   try {
     let userData = req.body;
-    const checkExist = await User.findOne({ userName: userData.userName });
+    const checkExist = await User.findOne({ email: userData.email });
     if (checkExist) {
       throw new Error("This user name is already exists!");
     } else {
       const salt = await bcrypt.genSalt(10);
       let hashPassword = await bcrypt.hash(userData.password, salt);
       const result = await User.create({
-        userName: userData.userName,
+        email: userData.email,
         password: hashPassword,
-        role: "user"
+        role: "user",
       });
       const { accessToken, refreshToken } = generateToken(userData);
       return res.status(200).json({
@@ -47,7 +47,7 @@ const signUp = async (req:Request, res:Response) => {
         errMessage: "Create new account success",
         userInfor: result,
         accessToken,
-        refreshToken
+        refreshToken,
       });
     }
   } catch (e) {
@@ -58,11 +58,11 @@ const signUp = async (req:Request, res:Response) => {
   }
 };
 
-const signIn = async (req:Request, res:Response) => {
+const signIn = async (req: Request, res: Response) => {
   try {
     const userData = req.body;
     const checkExist = await User.findOne({
-      userName: userData.userName,
+      email: userData.email,
     });
     if (checkExist) {
       const compare = await comparePassword(
@@ -72,12 +72,12 @@ const signIn = async (req:Request, res:Response) => {
       if (compare) {
         let { accessToken, refreshToken } = generateToken({
           ...userData,
-          role:checkExist.role
+          role: checkExist.role,
         });
         return res.status(200).json({
           errCode: 0,
           errMessage: "Sign in success",
-          userName: userData.userName,
+          email: userData.email,
           role: checkExist.role,
           accessToken,
           refreshToken,
@@ -86,7 +86,7 @@ const signIn = async (req:Request, res:Response) => {
         throw new Error("Password incorrect!");
       }
     } else {
-      throw new Error("User name incorrect!");
+      throw new Error("Email incorrect!");
     }
   } catch (e) {
     return res.status(500).json({
@@ -96,7 +96,7 @@ const signIn = async (req:Request, res:Response) => {
   }
 };
 
-const logout = async (req:Request, res:Response) => {
+const logout = async (req: Request, res: Response) => {
   try {
     const userData = req.body;
     const checkExist = await User.findOne({
