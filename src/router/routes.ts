@@ -6,6 +6,10 @@ import authController from "../controller/authController";
 import cartController from "../controller/cartController";
 import commentController from "../controller/commentController";
 import assessmentController from "../controller/assessmentController";
+import categoryController from "../controller/categoryController";
+import accessRightController from "../controller/accessRightController";
+import newController from "../controller/newController";
+import pageController from "../controller/pageController";
 
 const routes = (app: Express) => {
   app.get("/", (req: Request, res: Response) => {
@@ -106,6 +110,82 @@ const routes = (app: Express) => {
     middleWare.verifyToken,
     assessmentController.deleteAssessment
   );
+
+  //category api
+  app.get(
+    "/get-all-category",
+    middleWare.verifyToken,
+    categoryController.getAllCategory
+  );
+  app.get(
+    "/get-detail-category",
+    middleWare.verifyToken,
+    categoryController.getDetailCategory
+  );
+  app.post(
+    "/add-category",
+    middleWare.verifyToken,
+    categoryController.createCategory
+  );
+  app.put(
+    "/update-category",
+    middleWare.verifyToken,
+    categoryController.updateCategory
+  );
+  app.delete(
+    "/delete-category",
+    middleWare.verifyToken,
+    categoryController.deleteCategory
+  );
+
+  // access right api
+  app.get(
+    "/get-all-access-right",
+    middleWare.verifyToken,
+    accessRightController.getAllAccessRight
+  );
+  app.get(
+    "/get-detail-access-right",
+    middleWare.verifyToken,
+    accessRightController.getDetailAccessRight
+  );
+  app.post(
+    "/add-access-right",
+    middleWare.verifyToken,
+    accessRightController.createAccessRight
+  );
+  app.put(
+    "/update-access-right",
+    middleWare.verifyToken,
+    accessRightController.updateAccessRight
+  );
+  app.delete(
+    "/delete-access-right",
+    middleWare.verifyToken,
+    accessRightController.deleteAccessRight
+  );
+
+  // news api
+  app.get("/get-all-new", middleWare.verifyToken, newController.getAllNew);
+  app.get(
+    "/get-detail-new",
+    middleWare.verifyToken,
+    newController.getDetailNew
+  );
+  app.post("/add-new", middleWare.verifyToken, newController.createNew);
+  app.put("/update-new", middleWare.verifyToken, newController.updateNew);
+  app.delete("/delete-new", middleWare.verifyToken, newController.deleteNew);
+
+  // page api
+  app.get("/get-all-page", middleWare.verifyToken, pageController.getAllPage);
+  app.get(
+    "/get-detail-page",
+    middleWare.verifyToken,
+    pageController.getDetailPage
+  );
+  app.post("/add-page", middleWare.verifyToken, pageController.createPage);
+  app.put("/update-page", middleWare.verifyToken, pageController.updatePage);
+  app.delete("/delete-page", middleWare.verifyToken, pageController.deletePage);
 };
 
 export default routes;
