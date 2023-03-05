@@ -10,6 +10,7 @@ import categoryController from "../controller/categoryController";
 import accessRightController from "../controller/accessRightController";
 import newController from "../controller/newController";
 import pageController from "../controller/pageController";
+import orderController from "../controller/orderController";
 
 const routes = (app: Express) => {
   app.get("/", (req: Request, res: Response) => {
@@ -65,6 +66,23 @@ const routes = (app: Express) => {
     "/remove-from-cart",
     middleWare.verifyToken,
     cartController.removeFromCart
+  );
+
+  //order api
+  app.get(
+    "/get-all-order",
+    middleWare.verifyToken,
+    orderController.getAllOrderByUserName
+  );
+  app.post(
+    "/add-to-order",
+    middleWare.verifyToken,
+    orderController.AddOrUpdateOrder
+  );
+  app.delete(
+    "/remove-from-order",
+    middleWare.verifyToken,
+    orderController.removeFromOrder
   );
 
   //comment api
