@@ -4,7 +4,8 @@ import mongoose from "mongoose";
 const accessRightSchema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, required: true, ref: "users" },
-    loginTime: { type: String, required: true },
+    loginTime: { type: Date, required: true },
+    accessToken: { type: String, required: true },
     isBlocked: { type: Boolean, required: true },
   },
   {
