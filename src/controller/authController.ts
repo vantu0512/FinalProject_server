@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import User from "../model/user";
+import AccessRight from "../model/accessRight";
 import { Request, Response } from "express";
 
 const generateToken = (payload: any) => {
@@ -73,6 +74,13 @@ const signIn = async (req: Request, res: Response) => {
         let { accessToken, refreshToken } = generateToken({
           ...userData,
           role: checkExist.role,
+        });
+        await AccessRight.create({
+          userId: checkExist._id,
+          loginTime: new Date(),
+          expireTime: new Date(),
+          accessToken: accessToken,
+          isBlocked: false,
         });
         return res.status(200).json({
           errCode: 0,

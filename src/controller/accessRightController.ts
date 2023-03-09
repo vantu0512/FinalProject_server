@@ -91,7 +91,6 @@ const updateAccessRight = async (req: Request, res: Response) => {
     const data = req.body;
     const result = await AccessRight.findById({ _id: data.id });
     if (result) {
-      result.loginTime = data.loginTime;
       result.isBlocked = data.isBlocked;
       await result.save();
       return res.status(200).json({
