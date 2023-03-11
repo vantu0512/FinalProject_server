@@ -20,6 +20,7 @@ const routes = (app: Express) => {
   //sign in & sign up
   app.post("/sign-up", authController.signUp);
   app.post("/sign-in", authController.signIn);
+  app.post("/sign-out", authController.signOut);
 
   //product api
   app.get(

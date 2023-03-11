@@ -104,32 +104,14 @@ const signIn = async (req: Request, res: Response) => {
   }
 };
 
-const logout = async (req: Request, res: Response) => {
+const signOut = async (req: Request, res: Response) => {
   try {
     const userData = req.body;
-    const checkExist = await User.findOne({
+    const results = await AccessRight.findOneAndDelete({
       email: userData.email,
+      accessToken: userData.accessToken,
     });
-    if (checkExist) {
-      const compare = await comparePassword(
-        userData.password,
-        checkExist.password
-      );
-      if (compare) {
-        const secret = process.env.ACCESS_TOKEN_SECRET;
-        let accessToken = jwt.sign(userData, secret);
-        return res.status(200).json({
-          errCode: 0,
-          errMessage: "Login success",
-          email: userData.email,
-          accessToken,
-        });
-      } else {
-        throw new Error("Password incorrect!");
-      }
-    } else {
-      throw new Error("Email incorrect!");
-    }
+    if (results) return res.status(200).json({ message: "Log out success!" });
   } catch (e) {
     return res.status(500).json({
       errCode: 1,
@@ -141,7 +123,7 @@ const logout = async (req: Request, res: Response) => {
 const authController = {
   signUp,
   signIn,
-  logout,
+  signOut,
 };
 
 export default authController;
