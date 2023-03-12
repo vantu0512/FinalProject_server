@@ -4,7 +4,7 @@ import User from "../model/user";
 import AccessRight from "../model/accessRight";
 import { Request, Response } from "express";
 
-const generateToken = (payload: any) => {
+export const generateToken = (payload: any) => {
   const secretAccessToken = process.env.ACCESS_TOKEN_SECRET;
   const secretRefreshToken = process.env.REFRESH_TOKEN_SECRET;
   const accessToken = jwt.sign(payload, secretAccessToken, {

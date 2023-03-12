@@ -51,7 +51,18 @@ const routes = (app: Express) => {
   );
 
   //user api
-  app.get("/get-all-user", middleWare.verifyToken, userController.getAllUser);
+  app.get(
+    "/get-all-user",
+    middleWare.verifyTokenAdmin,
+    userController.getAllUser
+  );
+  app.post("/add-user", middleWare.verifyTokenAdmin, userController.addUser);
+  app.put("/edit-user", middleWare.verifyTokenAdmin, userController.editUser);
+  app.delete(
+    "/delete-user",
+    middleWare.verifyTokenAdmin,
+    userController.deleteUser
+  );
 
   //cart api
   app.get(
