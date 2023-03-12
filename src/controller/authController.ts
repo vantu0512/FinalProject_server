@@ -8,10 +8,10 @@ const generateToken = (payload: any) => {
   const secretAccessToken = process.env.ACCESS_TOKEN_SECRET;
   const secretRefreshToken = process.env.REFRESH_TOKEN_SECRET;
   const accessToken = jwt.sign(payload, secretAccessToken, {
-    expiresIn: "30m",
+    expiresIn: "1h",
   });
   const refreshToken = jwt.sign(payload, secretRefreshToken, {
-    expiresIn: "30m",
+    expiresIn: "1d",
   });
   return { accessToken, refreshToken };
 };
@@ -42,14 +42,25 @@ const signUp = async (req: Request, res: Response) => {
         password: hashPassword,
         role: "user",
       });
-      const { accessToken, refreshToken } = generateToken(userData);
-      return res.status(200).json({
-        errCode: 0,
-        errMessage: "Create new account success",
-        userInfor: result,
-        accessToken,
-        refreshToken,
-      });
+      if (result) {
+        const { accessToken, refreshToken } = generateToken({
+          email: result.email,
+          role: result.role,
+        });
+        await AccessRight.create({
+          userId: result._id,
+          accessToken,
+          refreshToken,
+          isBlocked: false,
+        });
+        return res.status(200).json({
+          errCode: 0,
+          errMessage: "Create new account success",
+          userInfor: result,
+          accessToken,
+          refreshToken,
+        });
+      }
     }
   } catch (e) {
     return res.status(200).json({
@@ -72,16 +83,23 @@ const signIn = async (req: Request, res: Response) => {
       );
       if (compare) {
         let { accessToken, refreshToken } = generateToken({
-          ...userData,
+          email: userData.email,
           role: checkExist.role,
         });
-        await AccessRight.create({
+        const record = await AccessRight.findOne({
           userId: checkExist._id,
-          loginTime: new Date(),
-          expireTime: new Date(),
-          accessToken: accessToken,
-          isBlocked: false,
         });
+        if (record) {
+          record.accessToken = accessToken;
+          record.refreshToken = refreshToken;
+          await record.save();
+        } else
+          await AccessRight.create({
+            userId: checkExist._id,
+            accessToken,
+            refreshToken,
+            isBlocked: false,
+          });
         return res.status(200).json({
           errCode: 0,
           errMessage: "Sign in success",
@@ -106,12 +124,50 @@ const signIn = async (req: Request, res: Response) => {
 
 const signOut = async (req: Request, res: Response) => {
   try {
-    const userData = req.body;
-    const results = await AccessRight.findOneAndDelete({
-      email: userData.email,
-      accessToken: userData.accessToken,
+    const record = await AccessRight.findOne({
+      refreshToken: req.body.refreshToken,
     });
-    if (results) return res.status(200).json({ message: "Log out success!" });
+    if (record) {
+      record.accessToken = null;
+      record.refreshToken = null;
+      await record.save();
+      return res.status(200).json({ message: "Log out success!" });
+    } else return res.sendStatus(403);
+  } catch (e) {
+    return res.status(500).json({
+      errCode: 1,
+      errMessage: e.message,
+    });
+  }
+};
+
+const refreshToken = async (req: Request, res: Response) => {
+  try {
+    const userData = req.body;
+    const secret = process.env.REFRESH_TOKEN_SECRET;
+    const decode: any = jwt.verify(userData.refreshToken, secret as string);
+    console.log(decode);
+    const record = await AccessRight.findOne({
+      refreshToken: userData.refreshToken,
+    });
+    if (record) {
+      const token = generateToken({
+        email: decode.email,
+        role: decode.role,
+      });
+      record.accessToken = token.accessToken;
+      record.refreshToken = token.refreshToken;
+      await record.save();
+      const userDataRes = {
+        email: decode.email,
+        role: decode.role,
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+      };
+      return res
+        .status(200)
+        .json({ message: "Refresh token success!", data: userDataRes });
+    } else return res.sendStatus(403);
   } catch (e) {
     return res.status(500).json({
       errCode: 1,
@@ -124,6 +180,7 @@ const authController = {
   signUp,
   signIn,
   signOut,
+  refreshToken,
 };
 
 export default authController;

@@ -21,6 +21,7 @@ const routes = (app: Express) => {
   app.post("/sign-up", authController.signUp);
   app.post("/sign-in", authController.signIn);
   app.post("/sign-out", authController.signOut);
+  app.post("/refresh-token", authController.refreshToken);
 
   //product api
   app.get(

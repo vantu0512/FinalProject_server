@@ -10,13 +10,12 @@ const verifyToken: RequestHandler = async (req, res, next) => {
   try {
     const secret = process.env.ACCESS_TOKEN_SECRET;
     let decode = jwt.verify(token, secret as string);
-    console.log("Decode: ", decode);
     const check = await AccessRight.findOne({ accessToken: token });
-    if (check) return next();
-    else
-      return res
-        .status(403)
-        .json({ message: "Session expired, please sign in again!" });
+    if (check) {
+      req.body.accessToken = token;
+      return next();
+    }
+    return res.sendStatus(403);
   } catch (error) {
     console.log(error);
     return res.sendStatus(403);
