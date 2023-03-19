@@ -8,9 +8,11 @@ const getAllUser = async (req: Request, res: Response) => {
   try {
     const page: number = Number(req.query.page);
     const size: number = Number(req.query.size);
-    const keyword: any = req.query.keyword;
+    const keyword: any = req.query.keyword || "";
     // const $regex = escapeStringRegexp(keyword);
-    const result = await User.find({})
+    const result = await User.find({
+      $or: [{ email: { $regex: keyword } }],
+    })
       .skip(size * (page - 1))
       .limit(size);
     if (result) {
