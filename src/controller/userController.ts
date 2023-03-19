@@ -92,9 +92,9 @@ const editUser = async (req: Request, res: Response) => {
 const deleteUser = async (req: Request, res: Response) => {
   try {
     let id = req.query.id;
-    const user = User.findOne({ _id: id });
-    (await user).delete;
-    if (user) return res.status(200).json({ message: "Delete user success!" });
+    const user = await User.deleteOne({ _id: id });
+    if (user)
+      return res.status(200).json({ message: `Delete user ${user} success!` });
     else throw new Error("This user is not exists!");
   } catch (e) {
     return res.status(500).json({
