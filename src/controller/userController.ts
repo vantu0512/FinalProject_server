@@ -93,8 +93,7 @@ const deleteUser = async (req: Request, res: Response) => {
   try {
     let id = req.query.id;
     const user = await User.deleteOne({ _id: id });
-    if (user)
-      return res.status(200).json({ message: `Delete user ${user} success!` });
+    if (user) return res.status(200).json({ message: `Delete user success!` });
     else throw new Error("This user is not exists!");
   } catch (e) {
     return res.status(500).json({
