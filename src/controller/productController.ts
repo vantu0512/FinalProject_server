@@ -3,7 +3,15 @@ import { Request, Response } from "express";
 
 const getAllProduct = async (req: Request, res: Response) => {
   try {
-    const result = await Product.find({});
+    const page: number = Number(req.query.page);
+    const size: number = Number(req.query.size);
+    const keyword: any = req.query.keyword || "";
+    const result = await Product.find({
+      $or: [{ productName: { $regex: keyword } }],
+    })
+      .populate("categoryId", { createdAt: 0, updatedAt: 0 })
+      .skip(size * (page - 1))
+      .limit(size);
     if (result) {
       return res.status(200).json({
         errCode: 0,
@@ -64,18 +72,16 @@ const deleteProduct = async (req: Request, res: Response) => {
   }
 };
 
-const createProduct = async (req: Request, res: Response) => {
+const addProduct = async (req: Request, res: Response) => {
   try {
     const data = req.body;
     const result = await Product.create({
-      title: data.title,
-      author: data.author,
+      productName: data.productName,
       description: data.description,
-      datePublish: data.datePublish,
-      pageNumber: data.pageNumber,
-      price: data.price,
-      category: data.category,
+      categoryId: data.categoryId,
       imgUrl: data.imgUrl,
+      price: data.price,
+      datePublish: data.datePublish,
     });
 
     return res.status(200).json({
@@ -121,7 +127,7 @@ const updateProduct = async (req: Request, res: Response) => {
 const productController = {
   getAllProduct,
   getDetailProduct,
-  createProduct,
+  addProduct,
   deleteProduct,
   updateProduct,
 };

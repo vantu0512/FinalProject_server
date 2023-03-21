@@ -24,11 +24,7 @@ const routes = (app: Express) => {
   app.post("/refresh-token", authController.refreshToken);
 
   //product api
-  app.get(
-    "/get-all-product",
-    middleWare.verifyToken,
-    productController.getAllProduct
-  );
+  app.get("/get-all-product", productController.getAllProduct);
   app.get(
     "/get-detail-product",
     middleWare.verifyToken,
@@ -40,9 +36,9 @@ const routes = (app: Express) => {
     productController.deleteProduct
   );
   app.post(
-    "/create-product",
+    "/add-product",
     middleWare.verifyToken,
-    productController.createProduct
+    productController.addProduct
   );
   app.put(
     "/update-product",

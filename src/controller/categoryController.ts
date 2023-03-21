@@ -68,6 +68,7 @@ const createCategory = async (req: Request, res: Response) => {
   try {
     const data = req.body;
     const result = await Category.create({
+      categoryId: data.categoryId,
       name: data.name,
     });
 
@@ -87,7 +88,7 @@ const createCategory = async (req: Request, res: Response) => {
 const updateCategory = async (req: Request, res: Response) => {
   try {
     const data = req.body;
-    const result = await Category.findById({ _id: data.id });
+    const result = await Category.findOne({ categoryId: data.categoryId });
     if (result) {
       result.name = data.name;
       await result.save();
