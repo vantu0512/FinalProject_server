@@ -8,10 +8,10 @@ const getAllProduct = async (req: Request, res: Response) => {
     const keyword: any = req.query.keyword || "";
     const result = await Product.find({
       $or: [{ productName: { $regex: keyword } }],
-    })
-      .populate("categoryId", { createdAt: 0, updatedAt: 0 })
-      .skip(size * (page - 1))
-      .limit(size);
+    }).populate("categoryId", { createdAt: 0, updatedAt: 0 });
+
+    // .skip(size * (page - 1))
+    // .limit(size)
     if (result) {
       return res.status(200).json({
         errCode: 0,
@@ -105,7 +105,7 @@ const updateProduct = async (req: Request, res: Response) => {
       result.description = data.description;
       result.datePublish = data.datePublish;
       result.price = data.price;
-      result.categoryId = data.category;
+      result.categoryId = data.categoryId;
       result.imgUrl = data.imgUrl;
       await result.save();
       return res.status(200).json({
