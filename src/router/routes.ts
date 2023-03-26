@@ -25,11 +25,7 @@ const routes = (app: Express) => {
 
   //product api
   app.get("/get-all-product", productController.getAllProduct);
-  app.get(
-    "/get-detail-product",
-    middleWare.verifyToken,
-    productController.getDetailProduct
-  );
+  app.get("/get-detail-product", productController.getDetailProduct);
   app.delete(
     "/delete-product",
     middleWare.verifyToken,

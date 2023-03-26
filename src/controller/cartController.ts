@@ -3,9 +3,9 @@ import { Request, Response } from "express";
 
 const getAllCartByUserName = async (req: Request, res: Response) => {
   try {
-    const userName = req.query.userName;
+    const email = req.query.email;
     const result = await Cart.find(
-      { userName: userName },
+      { email: email },
       { createdAt: 0, updatedAt: 0, userName: 0, _id: 0 }
     ).populate("productId", { createdAt: 0, updatedAt: 0 });
     return res.status(200).json({
@@ -24,8 +24,10 @@ const getAllCartByUserName = async (req: Request, res: Response) => {
 const AddOrUpdateCart = async (req: Request, res: Response) => {
   try {
     const cartData = req.body;
+    console.log("check: ", cartData);
+
     const result = await Cart.findOne({
-      userName: cartData.userName,
+      email: cartData.email,
       productId: cartData.productId,
     });
     if (result) {
@@ -37,8 +39,10 @@ const AddOrUpdateCart = async (req: Request, res: Response) => {
         data: result,
       });
     } else {
+      console.log("HJJKJ");
+
       const rs = await Cart.create({
-        userName: cartData.userName,
+        email: cartData.email,
         productId: cartData.productId,
         quantity: cartData.quantity,
       });
@@ -60,7 +64,7 @@ const removeFromCart = async (req: Request, res: Response) => {
   try {
     const cartData = req.body;
     const result = await Cart.findOneAndDelete({
-      userName: cartData.userName,
+      email: cartData.email,
       productId: cartData.productId,
     });
     return res.status(200).json({

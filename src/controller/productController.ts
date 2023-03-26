@@ -8,10 +8,9 @@ const getAllProduct = async (req: Request, res: Response) => {
     const keyword: any = req.query.keyword || "";
     const result = await Product.find({
       $or: [{ productName: { $regex: keyword } }],
-    }).populate("categoryId", { createdAt: 0, updatedAt: 0 });
-
-    // .skip(size * (page - 1))
-    // .limit(size)
+    })
+      .skip(size * (page - 1))
+      .limit(size);
     if (result) {
       return res.status(200).json({
         errCode: 0,
@@ -78,7 +77,7 @@ const addProduct = async (req: Request, res: Response) => {
     const result = await Product.create({
       productName: data.productName,
       description: data.description,
-      categoryId: data.categoryId,
+      categoryName: data.categoryName,
       imgUrl: data.imgUrl,
       price: data.price,
       datePublish: data.datePublish,
@@ -100,12 +99,12 @@ const addProduct = async (req: Request, res: Response) => {
 const updateProduct = async (req: Request, res: Response) => {
   try {
     const data = req.body;
-    const result = await Product.findById({ _id: data.id });
+    const result = await Product.findById({ _id: data._id });
     if (result) {
       result.description = data.description;
       result.datePublish = data.datePublish;
       result.price = data.price;
-      result.categoryId = data.categoryId;
+      result.categoryName = data.categoryName;
       result.imgUrl = data.imgUrl;
       await result.save();
       return res.status(200).json({

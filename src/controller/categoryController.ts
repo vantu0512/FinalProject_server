@@ -90,7 +90,7 @@ const updateCategory = async (req: Request, res: Response) => {
     const data = req.body;
     const result = await Category.findOne({ categoryId: data.categoryId });
     if (result) {
-      result.name = data.name;
+      result.categoryName = data.categoryName;
       await result.save();
       return res.status(200).json({
         errCode: 0,

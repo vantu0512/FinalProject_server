@@ -8,7 +8,7 @@ export const generateToken = (payload: any) => {
   const secretAccessToken = process.env.ACCESS_TOKEN_SECRET;
   const secretRefreshToken = process.env.REFRESH_TOKEN_SECRET;
   const accessToken = jwt.sign(payload, secretAccessToken, {
-    expiresIn: "1h",
+    expiresIn: "1d",
   });
   const refreshToken = jwt.sign(payload, secretRefreshToken, {
     expiresIn: "1d",
