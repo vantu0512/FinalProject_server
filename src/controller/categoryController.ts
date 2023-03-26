@@ -69,7 +69,7 @@ const createCategory = async (req: Request, res: Response) => {
     const data = req.body;
     const result = await Category.create({
       categoryId: data.categoryId,
-      name: data.name,
+      categoryName: data.categoryName,
     });
 
     return res.status(200).json({
