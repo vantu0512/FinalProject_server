@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 const cartSchema = new Schema(
   {
     email: { type: String, required: true, ref: "users" },
-    productId: { type: Schema.Types.ObjectId, required: true, ref: "products" },
+    productId: { type: String, required: true, ref: "products" },
     quantity: { type: Number, required: true },
   },
   {

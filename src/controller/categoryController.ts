@@ -3,7 +3,14 @@ import { Request, Response } from "express";
 
 const getAllCategory = async (req: Request, res: Response) => {
   try {
-    const result = await Category.find({});
+    const page: number = Number(req.query.page);
+    const size: number = Number(req.query.size);
+    const keyword: any = req.query.keyword || "";
+    const result = await Category.find({
+      $or: [{ categoryName: { $regex: keyword } }],
+    })
+      .skip(size * (page - 1))
+      .limit(size);
     if (result) {
       return res.status(200).json({
         errCode: 0,

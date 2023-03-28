@@ -60,7 +60,7 @@ const routes = (app: Express) => {
   app.get(
     "/get-all-cart",
     middleWare.verifyToken,
-    cartController.getAllCartByUserName
+    cartController.getAllCartByEmail
   );
   app.post(
     "/add-to-cart",

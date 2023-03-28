@@ -1,7 +1,7 @@
 import Cart from "../model/cart";
 import { Request, Response } from "express";
 
-const getAllCartByUserName = async (req: Request, res: Response) => {
+const getAllCartByEmail = async (req: Request, res: Response) => {
   try {
     const email = req.query.email;
     const result = await Cart.find(
@@ -24,8 +24,6 @@ const getAllCartByUserName = async (req: Request, res: Response) => {
 const AddOrUpdateCart = async (req: Request, res: Response) => {
   try {
     const cartData = req.body;
-    console.log("check: ", cartData);
-
     const result = await Cart.findOne({
       email: cartData.email,
       productId: cartData.productId,
@@ -39,8 +37,6 @@ const AddOrUpdateCart = async (req: Request, res: Response) => {
         data: result,
       });
     } else {
-      console.log("HJJKJ");
-
       const rs = await Cart.create({
         email: cartData.email,
         productId: cartData.productId,
@@ -62,7 +58,7 @@ const AddOrUpdateCart = async (req: Request, res: Response) => {
 
 const removeFromCart = async (req: Request, res: Response) => {
   try {
-    const cartData = req.body;
+    const cartData = req.query;
     const result = await Cart.findOneAndDelete({
       email: cartData.email,
       productId: cartData.productId,
@@ -81,7 +77,7 @@ const removeFromCart = async (req: Request, res: Response) => {
 };
 
 const cartController = {
-  getAllCartByUserName,
+  getAllCartByEmail,
   AddOrUpdateCart,
   removeFromCart,
 };
