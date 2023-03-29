@@ -55,6 +55,11 @@ const routes = (app: Express) => {
     middleWare.verifyTokenAdmin,
     userController.deleteUser
   );
+  app.post(
+    "/block-user",
+    middleWare.verifyTokenAdmin,
+    userController.blockUser
+  );
 
   //cart api
   app.get(

@@ -103,11 +103,42 @@ const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
+const blockUser = async (req: Request, res: Response) => {
+  try {
+    const email = req.body.email;
+    const isBlock = req.body.isBlock;
+    const user = await User.findOne({ email: email });
+    if (user) {
+      if (user.role !== "admin") {
+        user.isBlock = isBlock;
+        await user.save();
+        return res.status(200).json({
+          errCode: 0,
+          message: isBlock
+            ? "Block account success!"
+            : "Unlock account success!",
+        });
+      } else {
+        return res.status(500).json({
+          errorCode: 1,
+          message: "You can not block admin account!",
+        });
+      }
+    } else throw new Error("This user is not exists!");
+  } catch (e) {
+    return res.status(500).json({
+      errCode: 1,
+      errMessage: e.message,
+    });
+  }
+};
+
 const userController = {
   getAllUser,
   addUser,
   editUser,
   deleteUser,
+  blockUser,
 };
 
 export default userController;

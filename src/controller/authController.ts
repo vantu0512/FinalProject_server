@@ -77,6 +77,11 @@ const signIn = async (req: Request, res: Response) => {
       email: userData.email,
     });
     if (checkExist) {
+      if (checkExist.isBlock)
+        return res.status(200).json({
+          errCode: 1,
+          errMessage: "This account has been blocked!",
+        });
       const compare = await comparePassword(
         userData.password,
         checkExist.password

@@ -8,6 +8,7 @@ const userSchema = new Schema(
     role: { type: String },
     address: { type: String },
     fullName: { type: String },
+    isBlock: { type: Boolean },
   },
   {
     timestamps: true,
