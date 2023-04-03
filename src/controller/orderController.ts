@@ -1,13 +1,15 @@
 import Order from "../model/order";
 import { Request, Response } from "express";
 
-const getAllOrderByUserName = async (req: Request, res: Response) => {
+const getAllOrder = async (req: Request, res: Response) => {
   try {
-    const userName = req.query.userName;
-    const result = await Order.find(
-      { userName: userName },
-      { createdAt: 0, updatedAt: 0, userName: 0, _id: 0 }
-    ).populate("productId", { createdAt: 0, updatedAt: 0 });
+    const result = await Order.find({}).populate({
+      path: "cartId",
+      populate: {
+        path: "productId",
+      },
+    });
+
     return res.status(200).json({
       errCode: 0,
       errMessage: "Get all order success!",
@@ -21,32 +23,27 @@ const getAllOrderByUserName = async (req: Request, res: Response) => {
   }
 };
 
-const AddOrUpdateOrder = async (req: Request, res: Response) => {
+const AddOrder = async (req: Request, res: Response) => {
   try {
     const orderData = req.body;
-    const result = await Order.findOne({
-      userName: orderData.userName,
+    const check = await Order.findOne({
+      cartId: orderData.cartId,
+    });
+    if (check)
+      return res.status(500).json({
+        errCode: 1,
+        errorMessage: "This order already exists!",
+      });
+    const result = await Order.create({
       cartId: orderData.cartId,
       receiveAddress: orderData.receiveAddress,
+      isPurchase: false,
     });
     if (result) {
-      result.receiveAddress = orderData.receiveAddress;
-      await result.save();
-      return res.status(200).json({
-        errCode: 0,
-        errMessage: "Update order success!",
-        data: result,
-      });
-    } else {
-      const rs = await Order.create({
-        userName: orderData.userName,
-        cartId: orderData.cartId,
-        receiveAddress: orderData.receiveAddress,
-      });
       return res.status(200).json({
         errCode: 0,
         errMessage: "Add to order success!",
-        data: rs,
+        data: result,
       });
     }
   } catch (e) {
@@ -57,17 +54,15 @@ const AddOrUpdateOrder = async (req: Request, res: Response) => {
   }
 };
 
-const removeFromOrder = async (req: Request, res: Response) => {
+const removeOrder = async (req: Request, res: Response) => {
   try {
     const orderData = req.body;
     const result = await Order.findOneAndDelete({
-      userName: orderData.userName,
       cartId: orderData.cartId,
-      receiveAddress: orderData.receiveAddress,
     });
     return res.status(200).json({
       errCode: 0,
-      errMessage: "Delete from order success!",
+      errMessage: "Delete order success!",
       data: result,
     });
   } catch (e) {
@@ -78,9 +73,34 @@ const removeFromOrder = async (req: Request, res: Response) => {
   }
 };
 
+const checkout = async (req: Request, res: Response) => {
+  try {
+    console.log("here");
+    const orderData = req.body;
+    const result = await Order.findOne({
+      cartId: orderData.cartId,
+    });
+    if (result) {
+      result.isPurchase = true;
+      await result.save();
+      return res.status(200).json({
+        errCode: 0,
+        errMessage: "Order success!",
+        data: orderData,
+      });
+    }
+  } catch (e) {
+    return res.status(500).json({
+      errCode: 1,
+      errMessage: e.message,
+    });
+  }
+};
+
 const orderController = {
-  getAllOrderByUserName,
-  AddOrUpdateOrder,
-  removeFromOrder,
+  getAllOrder,
+  AddOrder,
+  removeOrder,
+  checkout,
 };
 export default orderController;

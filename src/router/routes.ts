@@ -82,18 +82,16 @@ const routes = (app: Express) => {
   app.get(
     "/get-all-order",
     middleWare.verifyToken,
-    orderController.getAllOrderByUserName
+    orderController.getAllOrder
   );
-  app.post(
-    "/add-to-order",
-    middleWare.verifyToken,
-    orderController.AddOrUpdateOrder
-  );
+  app.post("/add-order", middleWare.verifyToken, orderController.AddOrder);
   app.delete(
     "/remove-from-order",
     middleWare.verifyToken,
-    orderController.removeFromOrder
+    orderController.removeOrder
   );
+
+  app.post("/order-checkout", middleWare.verifyToken, orderController.checkout);
 
   //comment api
   app.get(

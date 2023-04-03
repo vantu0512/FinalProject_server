@@ -6,7 +6,7 @@ const getAllCartByEmail = async (req: Request, res: Response) => {
     const email = req.query.email;
     const result = await Cart.find(
       { email: email },
-      { createdAt: 0, updatedAt: 0, userName: 0, _id: 0 }
+      { createdAt: 0, updatedAt: 0, userName: 0 }
     ).populate("productId", { createdAt: 0, updatedAt: 0 });
     return res.status(200).json({
       errCode: 0,
