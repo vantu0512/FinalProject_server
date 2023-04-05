@@ -11,6 +11,7 @@ import accessRightController from "../controller/accessRightController";
 import newController from "../controller/newController";
 import pageController from "../controller/pageController";
 import orderController from "../controller/orderController";
+import paymentController from "../controller/paymentController";
 
 const routes = (app: Express) => {
   app.get("/", (req: Request, res: Response) => {
@@ -22,6 +23,11 @@ const routes = (app: Express) => {
   app.post("/sign-in", authController.signIn);
   app.post("/sign-out", authController.signOut);
   app.post("/refresh-token", authController.refreshToken);
+  app.post(
+    "/change-password",
+    middleWare.verifyToken,
+    authController.changePassword
+  );
 
   //product api
   app.get("/get-all-product", productController.getAllProduct);
@@ -78,6 +84,12 @@ const routes = (app: Express) => {
     cartController.removeFromCart
   );
 
+  app.delete(
+    "/delete-all-cart",
+    middleWare.verifyToken,
+    cartController.deleteAllCartByEmail
+  );
+
   //order api
   app.get(
     "/get-all-order",
@@ -85,13 +97,18 @@ const routes = (app: Express) => {
     orderController.getAllOrder
   );
   app.post("/add-order", middleWare.verifyToken, orderController.AddOrder);
+  app.post("/edit-order", middleWare.verifyToken, orderController.editOrder);
   app.delete(
-    "/remove-from-order",
+    "/delete-order",
     middleWare.verifyToken,
-    orderController.removeOrder
+    orderController.deleteOrder
   );
-
-  app.post("/order-checkout", middleWare.verifyToken, orderController.checkout);
+  //payment api
+  app.post(
+    "/stripe/create-checkout-session",
+    middleWare.verifyToken,
+    paymentController.checkOut
+  );
 
   //comment api
   app.get(

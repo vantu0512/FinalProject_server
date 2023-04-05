@@ -2,14 +2,12 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../model/user";
 import { Request, Response } from "express";
-import escapeStringRegexp from "escape-string-regexp";
 
 const getAllUser = async (req: Request, res: Response) => {
   try {
     const page: number = Number(req.query.page);
     const size: number = Number(req.query.size);
     const keyword: any = req.query.keyword || "";
-    // const $regex = escapeStringRegexp(keyword);
     const result = await User.find({
       $or: [{ email: { $regex: keyword } }],
     })
@@ -23,6 +21,29 @@ const getAllUser = async (req: Request, res: Response) => {
       });
     } else {
       throw new Error("There are no user!");
+    }
+  } catch (e) {
+    return res.status(500).json({
+      errCode: 1,
+      errMessage: e.message,
+    });
+  }
+};
+
+const getDetailUser = async (req: Request, res: Response) => {
+  try {
+    const email = req.query.email;
+    const result = await User.find({
+      email,
+    });
+    if (result) {
+      return res.status(200).json({
+        errCode: 0,
+        errMessage: "Get detail user success!",
+        data: result,
+      });
+    } else {
+      throw new Error("There is no user!");
     }
   } catch (e) {
     return res.status(500).json({
@@ -69,9 +90,10 @@ const editUser = async (req: Request, res: Response) => {
     let userData = req.body;
     const user = await User.findOne({ email: userData.email });
     if (user) {
-      user.role = userData.role;
-      user.address = userData.address;
-      user.fullName = userData.fullName;
+      if (userData.role) user.role = userData.role;
+      if (userData.fullName) user.fullName = userData.fullName;
+      if (userData.address) user.address = userData.address;
+      if (userData.avatar) user.avatar = userData.avatar;
       await user.save();
       return res.status(200).json({
         errCode: 0,
@@ -135,6 +157,7 @@ const blockUser = async (req: Request, res: Response) => {
 
 const userController = {
   getAllUser,
+  getDetailUser,
   addUser,
   editUser,
   deleteUser,

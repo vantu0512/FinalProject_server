@@ -76,9 +76,29 @@ const removeFromCart = async (req: Request, res: Response) => {
   }
 };
 
+const deleteAllCartByEmail = async (req: Request, res: Response) => {
+  try {
+    const cartData = req.query;
+    const result = await Cart.deleteMany({
+      email: cartData.email,
+    });
+    return res.status(200).json({
+      errCode: 0,
+      errMessage: "Delete all cart success!",
+      data: result,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      errCode: 1,
+      errMessage: e.message,
+    });
+  }
+};
+
 const cartController = {
   getAllCartByEmail,
   AddOrUpdateCart,
   removeFromCart,
+  deleteAllCartByEmail,
 };
 export default cartController;

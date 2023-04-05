@@ -6,8 +6,9 @@ const userSchema = new Schema(
     email: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String },
-    address: { type: String },
     fullName: { type: String },
+    address: { type: String },
+    avatar: { type: String },
     isBlock: { type: Boolean },
   },
   {

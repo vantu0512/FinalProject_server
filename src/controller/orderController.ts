@@ -3,13 +3,14 @@ import { Request, Response } from "express";
 
 const getAllOrder = async (req: Request, res: Response) => {
   try {
-    const result = await Order.find({}).populate({
-      path: "cartId",
-      populate: {
-        path: "productId",
-      },
-    });
-
+    const page: number = Number(req.query.page);
+    const size: number = Number(req.query.size);
+    const keyword: any = req.query.keyword || "";
+    const result = await Order.find({
+      $or: [{ email: { $regex: keyword } }],
+    })
+      .skip(size * (page - 1))
+      .limit(size);
     return res.status(200).json({
       errCode: 0,
       errMessage: "Get all order success!",
@@ -26,23 +27,18 @@ const getAllOrder = async (req: Request, res: Response) => {
 const AddOrder = async (req: Request, res: Response) => {
   try {
     const orderData = req.body;
-    const check = await Order.findOne({
-      cartId: orderData.cartId,
-    });
-    if (check)
-      return res.status(500).json({
-        errCode: 1,
-        errorMessage: "This order already exists!",
-      });
     const result = await Order.create({
-      cartId: orderData.cartId,
+      email: orderData.email,
+      listProduct: orderData.listProduct,
+      shipFee: orderData.shipFee,
+      paymentMethod: orderData.paymentMethod ?? false,
       receiveAddress: orderData.receiveAddress,
       isPurchase: false,
     });
     if (result) {
       return res.status(200).json({
         errCode: 0,
-        errMessage: "Add to order success!",
+        errMessage: "Add order success!",
         data: result,
       });
     }
@@ -54,11 +50,12 @@ const AddOrder = async (req: Request, res: Response) => {
   }
 };
 
-const removeOrder = async (req: Request, res: Response) => {
+const deleteOrder = async (req: Request, res: Response) => {
   try {
-    const orderData = req.body;
+    const data = req.query;
     const result = await Order.findOneAndDelete({
-      cartId: orderData.cartId,
+      email: data?.email,
+      _id: data?.orderId,
     });
     return res.status(200).json({
       errCode: 0,
@@ -73,19 +70,25 @@ const removeOrder = async (req: Request, res: Response) => {
   }
 };
 
-const checkout = async (req: Request, res: Response) => {
+const editOrder = async (req: Request, res: Response) => {
   try {
-    console.log("here");
     const orderData = req.body;
     const result = await Order.findOne({
-      cartId: orderData.cartId,
+      email: orderData.email,
+      _id: orderData.orderId,
     });
     if (result) {
-      result.isPurchase = true;
+      if (orderData.receiveAddress)
+        result.receiveAddress = orderData.receiveAddress;
+      if (orderData.listProduct) result.listProduct = orderData.listProduct;
+      if (orderData.shipFee) result.shipFee = orderData.shipFee;
+      if (orderData.paymentMethod)
+        result.paymentMethod = orderData.paymentMethod;
+      if (orderData.isPurchase) result.isPurchase = orderData.isPurchase;
       await result.save();
       return res.status(200).json({
         errCode: 0,
-        errMessage: "Order success!",
+        errMessage: "Edit order success!",
         data: orderData,
       });
     }
@@ -100,7 +103,7 @@ const checkout = async (req: Request, res: Response) => {
 const orderController = {
   getAllOrder,
   AddOrder,
-  removeOrder,
-  checkout,
+  deleteOrder,
+  editOrder,
 };
 export default orderController;

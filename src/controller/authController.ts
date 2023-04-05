@@ -41,11 +41,13 @@ const signUp = async (req: Request, res: Response) => {
         email: userData.email,
         password: hashPassword,
         role: "user",
+        fullName: "",
       });
       if (result) {
         const { accessToken, refreshToken } = generateToken({
           email: result.email,
           role: result.role,
+          fullName: result.fullName,
         });
         await AccessRight.create({
           userId: result._id,
@@ -90,6 +92,7 @@ const signIn = async (req: Request, res: Response) => {
         let { accessToken, refreshToken } = generateToken({
           email: userData.email,
           role: checkExist.role,
+          fullName: checkExist.fullName,
         });
         const record = await AccessRight.findOne({
           userId: checkExist._id,
@@ -110,6 +113,7 @@ const signIn = async (req: Request, res: Response) => {
           errMessage: "Sign in success",
           email: userData.email,
           role: checkExist.role,
+          fullName: checkExist.fullName,
           accessToken,
           refreshToken,
         });
@@ -159,6 +163,7 @@ const refreshToken = async (req: Request, res: Response) => {
       const token = generateToken({
         email: decode.email,
         role: decode.role,
+        fullName: decode.fullName,
       });
       record.accessToken = token.accessToken;
       record.refreshToken = token.refreshToken;
@@ -166,6 +171,7 @@ const refreshToken = async (req: Request, res: Response) => {
       const userDataRes = {
         email: decode.email,
         role: decode.role,
+        fullName: decode.fullName,
         accessToken: token.accessToken,
         refreshToken: token.refreshToken,
       };
@@ -181,11 +187,71 @@ const refreshToken = async (req: Request, res: Response) => {
   }
 };
 
+const changePassword = async (req: Request, res: Response) => {
+  try {
+    const userData = req.body;
+    const checkExist = await User.findOne({
+      email: userData.email,
+    });
+    if (checkExist) {
+      const compare = await comparePassword(
+        userData.password,
+        checkExist.password
+      );
+      if (compare) {
+        const salt = await bcrypt.genSalt(10);
+        let hashPassword = await bcrypt.hash(userData.newPassword, salt);
+        checkExist.password = hashPassword;
+        await checkExist.save();
+
+        let { accessToken, refreshToken } = generateToken({
+          email: userData.email,
+          role: checkExist.role,
+          fullName: checkExist.fullName,
+        });
+        const record = await AccessRight.findOne({
+          userId: checkExist._id,
+        });
+        if (record) {
+          record.accessToken = accessToken;
+          record.refreshToken = refreshToken;
+          await record.save();
+        } else
+          await AccessRight.create({
+            userId: checkExist._id,
+            accessToken,
+            refreshToken,
+            isBlocked: false,
+          });
+        return res.status(200).json({
+          errCode: 0,
+          errMessage: "Change password success",
+          email: userData.email,
+          role: checkExist.role,
+          fullName: checkExist.fullName,
+          accessToken,
+          refreshToken,
+        });
+      } else {
+        throw new Error("Password incorrect!");
+      }
+    } else {
+      throw new Error("Email incorrect!");
+    }
+  } catch (e) {
+    return res.status(500).json({
+      errCode: 1,
+      errMessage: e.message,
+    });
+  }
+};
+
 const authController = {
   signUp,
   signIn,
   signOut,
   refreshToken,
+  changePassword,
 };
 
 export default authController;
