@@ -3,12 +3,17 @@ import { Request, Response } from "express";
 
 const getAllNew = async (req: Request, res: Response) => {
   try {
-    const result = await New.find({});
+    const page: number = Number(req.query.page);
+    const size: number = Number(req.query.size);
+    const keyword: any = req.query.keyword || "";
+    const result = await New.find({ $or: [{ name: { $regex: keyword } }] })
+      .skip(size * (page - 1))
+      .limit(size);
     if (result) {
       return res.status(200).json({
         errCode: 0,
         errMessage: "Get all new success!",
-        listNew: result,
+        data: result,
       });
     } else {
       throw new Error("There are no new!");
@@ -29,7 +34,7 @@ const getDetailNew = async (req: Request, res: Response) => {
       return res.status(200).json({
         errCode: 0,
         errMessage: "Get detail new success!",
-        new: result,
+        data: result,
       });
     } else {
       throw new Error("There are no new!");
@@ -64,19 +69,19 @@ const deleteNew = async (req: Request, res: Response) => {
   }
 };
 
-const createNew = async (req: Request, res: Response) => {
+const addNew = async (req: Request, res: Response) => {
   try {
     const data = req.body;
     const result = await New.create({
       name: data.name,
       description: data.description,
-      content: data.content,
-      datePublish: data.datePublish,
+      contentMarkdown: data.contentMarkdown,
+      contentHTML: data.contentHTML,
     });
 
     return res.status(200).json({
       errCode: 0,
-      errMessage: "Create new new success!",
+      errMessage: "Add new new success!",
       data: result,
     });
   } catch (e) {
@@ -87,15 +92,17 @@ const createNew = async (req: Request, res: Response) => {
   }
 };
 
-const updateNew = async (req: Request, res: Response) => {
+const editNew = async (req: Request, res: Response) => {
   try {
     const data = req.body;
+    console.log(data.id);
+
     const result = await New.findById({ _id: data.id });
     if (result) {
       result.name = data.name;
       result.description = data.description;
-      result.content = data.content;
-      result.datePublish = data.datePublish;
+      result.contentMarkdown = data.contentMarkdown;
+      result.contentHTML = data.contentHTML;
       await result.save();
       return res.status(200).json({
         errCode: 0,
@@ -116,9 +123,9 @@ const updateNew = async (req: Request, res: Response) => {
 const newController = {
   getAllNew,
   getDetailNew,
-  createNew,
+  addNew,
   deleteNew,
-  updateNew,
+  editNew,
 };
 
 export default newController;

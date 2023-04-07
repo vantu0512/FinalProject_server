@@ -114,6 +114,7 @@ const signIn = async (req: Request, res: Response) => {
           email: userData.email,
           role: checkExist.role,
           fullName: checkExist.fullName,
+          avatar: checkExist.avatar,
           accessToken,
           refreshToken,
         });

@@ -33,9 +33,12 @@ const getAllUser = async (req: Request, res: Response) => {
 const getDetailUser = async (req: Request, res: Response) => {
   try {
     const email = req.query.email;
-    const result = await User.find({
-      email,
-    });
+    const result = await User.findOne(
+      {
+        email,
+      },
+      { password: 0, isBlock: 0 }
+    );
     if (result) {
       return res.status(200).json({
         errCode: 0,

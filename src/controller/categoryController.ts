@@ -3,8 +3,8 @@ import { Request, Response } from "express";
 
 const getAllCategory = async (req: Request, res: Response) => {
   try {
-    const page: number = Number(req.query.page);
-    const size: number = Number(req.query.size);
+    const page: number = Number(req.query.page) || 1;
+    const size: number = Number(req.query.size) || 10;
     const keyword: any = req.query.keyword || "";
     const result = await Category.find({
       $or: [{ categoryName: { $regex: keyword } }],

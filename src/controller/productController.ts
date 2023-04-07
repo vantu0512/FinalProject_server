@@ -1,3 +1,4 @@
+import Category from "../model/category";
 import Product from "../model/product";
 import { Request, Response } from "express";
 
@@ -6,9 +7,19 @@ const getAllProduct = async (req: Request, res: Response) => {
     const page: number = Number(req.query.page);
     const size: number = Number(req.query.size);
     const keyword: any = req.query.keyword || "";
+    const categoryName: any = req.query.filter
+      ? `${req.query.filter}`.split(",")
+      : [];
+    let listCategory: any = [];
+    const temp: any = await Category.find({});
+    if (temp) listCategory = temp.map((item: any) => item?.categoryName);
+
     const result = await Product.find({
       $or: [{ productName: { $regex: keyword } }],
+      // ...(categoryName && { categoryName }),
     })
+      .where("categoryName")
+      .in(categoryName.length > 0 ? [...categoryName] : [...listCategory])
       .skip(size * (page - 1))
       .limit(size);
     if (result) {

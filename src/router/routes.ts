@@ -54,8 +54,13 @@ const routes = (app: Express) => {
     middleWare.verifyTokenAdmin,
     userController.getAllUser
   );
+  app.get(
+    "/get-detail-user",
+    middleWare.verifyToken,
+    userController.getDetailUser
+  );
   app.post("/add-user", middleWare.verifyTokenAdmin, userController.addUser);
-  app.put("/edit-user", middleWare.verifyTokenAdmin, userController.editUser);
+  app.put("/edit-user", middleWare.verifyToken, userController.editUser);
   app.delete(
     "/delete-user",
     middleWare.verifyTokenAdmin,
@@ -209,14 +214,10 @@ const routes = (app: Express) => {
   );
 
   // news api
-  app.get("/get-all-new", middleWare.verifyToken, newController.getAllNew);
-  app.get(
-    "/get-detail-new",
-    middleWare.verifyToken,
-    newController.getDetailNew
-  );
-  app.post("/add-new", middleWare.verifyToken, newController.createNew);
-  app.put("/update-new", middleWare.verifyToken, newController.updateNew);
+  app.get("/get-all-new", newController.getAllNew);
+  app.get("/get-detail-new", newController.getDetailNew);
+  app.post("/add-new", middleWare.verifyToken, newController.addNew);
+  app.put("/edit-new", middleWare.verifyToken, newController.editNew);
   app.delete("/delete-new", middleWare.verifyToken, newController.deleteNew);
 
   // page api

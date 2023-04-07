@@ -5,8 +5,8 @@ const newSchema = new Schema(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
-    content: { type: String, required: true },
-    datePublish: { type: String, required: true },
+    contentHTML: { type: String, required: true },
+    contentMarkdown: { type: String, required: true },
   },
   {
     timestamps: true,
