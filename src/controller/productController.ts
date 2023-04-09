@@ -7,6 +7,14 @@ const getAllProduct = async (req: Request, res: Response) => {
     const page: number = Number(req.query.page);
     const size: number = Number(req.query.size);
     const keyword: any = req.query.keyword || "";
+    const reqSortPrice: any = req.query.sortPrice || "";
+    let minPrice: number;
+    let maxPrice: number;
+    if (reqSortPrice) {
+      minPrice = JSON.parse(reqSortPrice)?.minPrice;
+      maxPrice = JSON.parse(reqSortPrice)?.maxPrice;
+    }
+
     const categoryName: any = req.query.filter
       ? `${req.query.filter}`.split(",")
       : [];
@@ -16,6 +24,18 @@ const getAllProduct = async (req: Request, res: Response) => {
 
     const result = await Product.find({
       $or: [{ productName: { $regex: keyword } }],
+      $and: [
+        {
+          price: {
+            $gt: minPrice ?? 0,
+          },
+        },
+        {
+          price: {
+            $lte: maxPrice ?? 999999,
+          },
+        },
+      ],
       // ...(categoryName && { categoryName }),
     })
       .where("categoryName")

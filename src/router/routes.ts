@@ -160,16 +160,8 @@ const routes = (app: Express) => {
   );
 
   //category api
-  app.get(
-    "/get-all-category",
-    middleWare.verifyToken,
-    categoryController.getAllCategory
-  );
-  app.get(
-    "/get-detail-category",
-    middleWare.verifyToken,
-    categoryController.getDetailCategory
-  );
+  app.get("/get-all-category", categoryController.getAllCategory);
+  app.get("/get-detail-category", categoryController.getDetailCategory);
   app.post(
     "/add-category",
     middleWare.verifyToken,
