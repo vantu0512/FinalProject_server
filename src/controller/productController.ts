@@ -22,6 +22,10 @@ const getAllProduct = async (req: Request, res: Response) => {
     const temp: any = await Category.find({});
     if (temp) listCategory = temp.map((item: any) => item?.categoryName);
 
+    const resultTotal = await Product.find({
+      productName: { $regex: keyword },
+    });
+
     const result = await Product.find({
       $or: [{ productName: { $regex: keyword } }],
       $and: [
@@ -42,11 +46,12 @@ const getAllProduct = async (req: Request, res: Response) => {
       .in(categoryName.length > 0 ? [...categoryName] : [...listCategory])
       .skip(size * (page - 1))
       .limit(size);
-    if (result) {
+    if (result && resultTotal) {
       return res.status(200).json({
         errCode: 0,
         errMessage: "Get all product success!",
         listProduct: result,
+        totalRecord: resultTotal.length,
       });
     } else {
       throw new Error("There are no product!");

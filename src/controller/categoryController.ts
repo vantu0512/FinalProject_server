@@ -6,16 +6,20 @@ const getAllCategory = async (req: Request, res: Response) => {
     const page: number = Number(req.query.page) || 1;
     const size: number = Number(req.query.size) || 10;
     const keyword: any = req.query.keyword || "";
+    const resultTotal = await Category.find({
+      $or: [{ categoryName: { $regex: keyword } }],
+    });
     const result = await Category.find({
       $or: [{ categoryName: { $regex: keyword } }],
     })
       .skip(size * (page - 1))
       .limit(size);
-    if (result) {
+    if (result && resultTotal) {
       return res.status(200).json({
         errCode: 0,
         errMessage: "Get all category success!",
         listCategory: result,
+        totalRecord: resultTotal.length,
       });
     } else {
       throw new Error("There are no category!");

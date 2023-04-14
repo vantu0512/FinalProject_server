@@ -6,14 +6,18 @@ const getAllNew = async (req: Request, res: Response) => {
     const page: number = Number(req.query.page);
     const size: number = Number(req.query.size);
     const keyword: any = req.query.keyword || "";
+    const resultTotal = await New.find({
+      $or: [{ name: { $regex: keyword } }],
+    });
     const result = await New.find({ $or: [{ name: { $regex: keyword } }] })
       .skip(size * (page - 1))
       .limit(size);
-    if (result) {
+    if (result && resultTotal) {
       return res.status(200).json({
         errCode: 0,
         errMessage: "Get all new success!",
         data: result,
+        totalRecord: resultTotal.length,
       });
     } else {
       throw new Error("There are no new!");

@@ -6,16 +6,21 @@ const getAllOrder = async (req: Request, res: Response) => {
     const page: number = Number(req.query.page);
     const size: number = Number(req.query.size);
     const keyword: any = req.query.keyword || "";
+    const resultTotal = await Order.find({
+      $or: [{ email: { $regex: keyword } }],
+    });
     const result = await Order.find({
       $or: [{ email: { $regex: keyword } }],
     })
       .skip(size * (page - 1))
       .limit(size);
-    return res.status(200).json({
-      errCode: 0,
-      errMessage: "Get all order success!",
-      data: result,
-    });
+    if (result && resultTotal)
+      return res.status(200).json({
+        errCode: 0,
+        errMessage: "Get all order success!",
+        data: result,
+        totalRecord: resultTotal.length,
+      });
   } catch (e) {
     return res.status(500).json({
       errCode: 1,

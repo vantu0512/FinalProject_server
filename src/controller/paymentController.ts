@@ -1,11 +1,11 @@
 import Stripe from "stripe";
 import { Request, Response } from "express";
-const stripe = new Stripe(
-  "sk_test_51Ms1qKD8Zu3841aLSJx4XyFBWvTrZAUCnHIV1KgEysWTHNqy4nfac6KOTrzlWDQZb20YvkbOKHF9By7MGeiRuEO100CTUStKPm",
-  {
-    apiVersion: "2022-11-15",
-  }
-);
+import env from "dotenv";
+env.config();
+
+const stripe = new Stripe(process.env.SECRET_KEY_STRIPE, {
+  apiVersion: "2022-11-15",
+});
 
 const formatLineItem = (data: any) => {
   const arr = data.map((item: any) => {
