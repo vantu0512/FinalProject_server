@@ -11,7 +11,8 @@ const getAllNew = async (req: Request, res: Response) => {
     });
     const result = await New.find({ $or: [{ name: { $regex: keyword } }] })
       .skip(size * (page - 1))
-      .limit(size);
+      .limit(size)
+      .sort({ createdAt: "desc" });
     if (result && resultTotal) {
       return res.status(200).json({
         errCode: 0,

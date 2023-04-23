@@ -45,7 +45,8 @@ const getAllProduct = async (req: Request, res: Response) => {
       .where("categoryName")
       .in(categoryName.length > 0 ? [...categoryName] : [...listCategory])
       .skip(size * (page - 1))
-      .limit(size);
+      .limit(size)
+      .sort({ datePublish: "desc" });
     if (result && resultTotal) {
       return res.status(200).json({
         errCode: 0,

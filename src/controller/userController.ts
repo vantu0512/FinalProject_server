@@ -15,7 +15,8 @@ const getAllUser = async (req: Request, res: Response) => {
       $or: [{ email: { $regex: keyword } }],
     })
       .skip(size * (page - 1))
-      .limit(size);
+      .limit(size)
+      .sort({ createdAt: "desc" });
     if (result && resultTotal) {
       return res.status(200).json({
         errCode: 0,

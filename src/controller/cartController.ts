@@ -30,6 +30,7 @@ const AddOrUpdateCart = async (req: Request, res: Response) => {
     });
     if (result) {
       result.quantity = Number(result.quantity) + Number(cartData.quantity);
+      result.size = Number(cartData.size);
       await result.save();
       return res.status(200).json({
         errCode: 0,
@@ -41,6 +42,7 @@ const AddOrUpdateCart = async (req: Request, res: Response) => {
         email: cartData.email,
         productId: cartData.productId,
         quantity: cartData.quantity,
+        size: cartData.size,
       });
       return res.status(200).json({
         errCode: 0,
